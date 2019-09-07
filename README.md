@@ -26,6 +26,14 @@ the `server-init` parameter will install the pre-requisites for the Horizon Serv
 make server-init
 ```
 
+### Client Install Check
+
+To verify that the Anax agent is installed and running, use the following:
+
+``` bash
+make check
+```
+
 ### Client Initialization
 
 If the Anax agent is already installed, 
