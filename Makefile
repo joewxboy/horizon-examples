@@ -20,6 +20,7 @@ present = \xF0\x9F\x8E\x81
 SYSTEM_ARCH := $(shell uname -m | sed -e 's/aarch64.*/arm64/' -e 's/x86_64.*/amd64/' -e 's/armv.*/arm/')
 OS := $(shell uname -s)
 PUBLIC_IP := $(shell curl --silent ifconfig.me) # Thanks, Sanjay!
+USER := $(shell whoami)
 
 # To build for an arch different from the current system, set this env var to "arm", "arm64", or "amd64"
 ARCH ?= $(SYSTEM_ARCH)
@@ -31,26 +32,29 @@ ifeq ($(OS),Darwin)
 endif
 
 # These variables can be overridden from the environment
-PATTERN_NAME ?= IBM.helloworld
+PATTERN_NAME ?= pattern.edgex.amd64
 PATTERN_VERSION ?= 1.0.0
-HZN_ORG_ID ?= mycluster
+HZN_ORG_ID ?= testorg
 HZN_EXCHANGE_USER_AUTH ?= joe:cool
-HZN_DEVICE_ID ?= [device-name-here]
-HZN_DEVICE_TOKEN ?= [unique-string-here]
+HZN_DEVICE_ID ?= joe-blue-osx
+HZN_DEVICE_TOKEN ?= i-am-not-a-pw
 HZN_EXCHANGE_NODE_AUTH ?= $HZN_DEVICE_ID:$HZN_DEVICE_TOKEN
-HZN_EXCHANGE_URL ?= https://52.116.21.112:8443/ec-exchange/v1/
-HZN_FSS_CSSURL ?= https://52.116.21.112:8443/ec-css/
+HZN_EXCHANGE_URL ?= https://alpha.edge-fabric.com/v1/
+HZN_FSS_CSSURL ?= https://alpha.edge-fabric.com/css/
 
 default: show-args
 
 show-args:
-	@echo "${cyan}              OS: ${yellow}$(OS)${no_color}"
-	@echo "${cyan}     SYSTEM_ARCH: ${yellow}$(SYSTEM_ARCH)${no_color}"
-	@echo "${cyan}       PUBLIC_IP: ${yellow}$(PUBLIC_IP)${no_color}"
-	@echo "${cyan}    PATTERN_NAME: ${yellow}$(PATTERN_NAME)${no_color}"
-	@echo "${cyan}      HZN_ORG_ID: ${yellow}$(HZN_ORG_ID)${no_color}"
-	@echo "${cyan}HZN_EXCHANGE_URL: ${yellow}$(HZN_EXCHANGE_URL)${no_color}"
-	@echo "${cyan}    HZN_FILEPATH: ${yellow}$(HZN_FILEPATH)${no_color}"
+	@echo "${cyan}                  USER: ${yellow}$(USER)${no_color}"
+	@echo "${cyan}                    OS: ${yellow}$(OS)${no_color}"
+	@echo "${cyan}           SYSTEM_ARCH: ${yellow}$(SYSTEM_ARCH)${no_color}"
+	@echo "${cyan}             PUBLIC_IP: ${yellow}$(PUBLIC_IP)${no_color}"
+	@echo "${cyan}          PATTERN_NAME: ${yellow}$(PATTERN_NAME)${no_color}"
+	@echo "${cyan}            HZN_ORG_ID: ${yellow}$(HZN_ORG_ID)${no_color}"
+	@echo "${cyan}      HZN_EXCHANGE_URL: ${yellow}$(HZN_EXCHANGE_URL)${no_color}"
+	@echo "${cyan}        HZN_FSS_CSSURL: ${yellow}$(HZN_FSS_CSSURL)${no_color}"
+	@echo "${cyan}HZN_EXCHANGE_USER_AUTH: ${yellow}$(HZN_EXCHANGE_USER_AUTH)${no_color}"
+	@echo "${cyan}          HZN_FILEPATH: ${yellow}$(HZN_FILEPATH)${no_color}"
 
 publish-all: populate-configs validate-keys validate-exchange-exist validate-file-exist validate-file-schema
 
@@ -64,8 +68,7 @@ ifeq (,$(wildcard /etc/default/horizon))
 	@echo "Is the Horizon Anax agent installed?"
 else
 	@echo "${eyes}   ${green}FILE FOUND: ${yellow}/etc/default/horizon${no_color}, replacing contents."
-	@sudo chmod a+rw /etc/default
-	@sudo chmod a+rw /etc/default/horizon
+	@sudo chmod -R a+rw /etc/default
 	@sed -i.bak "s~HZN_EXCHANGE_URL=.*~HZN_EXCHANGE_URL=${HZN_EXCHANGE_URL}~" /etc/default/horizon
 	@sed -i.bak "s~HZN_FSS_CSSURL=.*~HZN_FSS_CSSURL=${HZN_FSS_CSSURL}~" /etc/default/horizon
 	@echo "${eyes}   Replacing contents of: ${yellow}${HZN_FILEPATH}/hzn.json${no_color}."
@@ -95,4 +98,35 @@ validate-file-schema:
 
 validate-exchange-exist:
 
-.PHONY: default show-args publish-all validate-keys validate-file-exist validate-file-schema validate-exchange-exist populate-configs
+server-init:
+	@echo "${cyan}INITIALIZING UBUNTU SERVER FOR HORIZON SERVICES${no_color}"
+	@echo "${cyan}===============================================${no_color}"
+
+ifeq ($(OS),Darwin)
+	@echo "${crossbones}   ${red}WRONG OS: ${yellow}You appear to be running MacOS${no_color}."
+else
+	@echo "${cyan}Installing pre-requisites.${no_color}"
+	@sudo apt-get -y update
+	@sudo apt-get -y install curl jq make gcc
+
+	@echo "${cyan}Installing Golang.${no_color}"
+	@sudo curl https://dl.google.com/go/go1.11.4.linux-amd64.tar.gz | sudo tar -xzf- -C /usr/local/
+	PATH = $PATH:/usr/local/go/bin
+
+	@echo "${cyan}Installing Docker and docker-compose.${no_color}"
+	@sudo curl -fsSL get.docker.com | sudo sh
+	@sudo usermod -aG docker ${USER}
+	@sudo apt-get -y install docker-compose
+
+	@echo "${cyan}Installing Go utilities.${no_color}"
+	@sudo mkdir -p /go/src
+	@sudo chmod -R a+rwx /go
+	GOPATH = /go
+	go get -u github.com/kardianos/govendor
+
+	@echo "${cyan}Retrieving Anax source code.${no_color}"
+	go get -u github.com/open-horizon/anax
+	ANAX_SOURCE = /go/src/github.com/open-horizon/anax
+endif
+
+.PHONY: default show-args publish-all validate-keys validate-file-exist validate-file-schema validate-exchange-exist populate-configs server-init
