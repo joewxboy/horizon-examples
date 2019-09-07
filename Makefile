@@ -21,6 +21,9 @@ SYSTEM_ARCH := $(shell uname -m | sed -e 's/aarch64.*/arm64/' -e 's/x86_64.*/amd
 OS := $(shell uname -s)
 PUBLIC_IP := $(shell curl --silent ifconfig.me) # Thanks, Sanjay!
 USER := $(shell whoami)
+HZN := $(shell which hzn)
+HORIZON := $(shell which horizon-container)
+HORIZON_RUNNING := $(shell sudo docker ps -f name=horizon | grep -w openhorizon)
 
 # To build for an arch different from the current system, set this env var to "arm", "arm64", or "amd64"
 ARCH ?= $(SYSTEM_ARCH)
@@ -44,8 +47,12 @@ HZN_FSS_CSSURL ?= https://alpha.edge-fabric.com/css/
 
 default: show-args
 
+check: validate-anax-exist
+
 show-args:
 	@echo "${cyan}                  USER: ${yellow}$(USER)${no_color}"
+	@echo "${cyan}                   HZN: ${yellow}$(HZN)${no_color}"
+	@echo "${cyan}               HORIZON: ${yellow}$(HORIZON)${no_color}"
 	@echo "${cyan}                    OS: ${yellow}$(OS)${no_color}"
 	@echo "${cyan}           SYSTEM_ARCH: ${yellow}$(SYSTEM_ARCH)${no_color}"
 	@echo "${cyan}             PUBLIC_IP: ${yellow}$(PUBLIC_IP)${no_color}"
@@ -62,10 +69,11 @@ populate-configs:
 	@echo "${cyan}POPULATING CONFIGURATION FILES${no_color}"
 	@echo "${cyan}==============================${no_color}"
 
-	@echo "${cyan}Populating agent variable data properties files.${no_color}"
+	@echo "${cyan}Populating agent variable data properties files${no_color}."
 ifeq (,$(wildcard /etc/default/horizon))
 	@echo "${crossbones}   ${red}FILE NOT FOUND: ${yellow}/etc/default/horizon${no_color}, cannot continue."
 	@echo "Is the Horizon Anax agent installed?"
+	@exit 1
 else
 	@echo "${eyes}   ${green}FILE FOUND: ${yellow}/etc/default/horizon${no_color}, replacing contents."
 	@sudo chmod -R a+rw /etc/default
@@ -80,7 +88,7 @@ else
 	@echo "}" >> ${HZN_FILEPATH}/hzn.json
 endif
 
-	@echo "${cyan}Restarting Horizon Anax agent.${no_color}"
+	@echo "${cyan}Restarting Horizon Anax agent${no_color}."
 ifeq ($(OS),Darwin)
 	@sudo horizon-container stop
 	@sudo horizon-container start
@@ -88,7 +96,7 @@ else
 	@sudo systemctl restart horizon
 endif
 
-	@echo "${cyan}Task complete.${no_color}"
+	@echo "${cyan}Task complete${no_color}."
 
 validate-keys:
 
@@ -98,35 +106,61 @@ validate-file-schema:
 
 validate-exchange-exist:
 
+validate-anax-exist:
+	@echo "${cyan}CHECKING FOR HORIZON ANAX AGENT${no_color}"
+	@echo "${cyan}===============================${no_color}"
+
+ifeq (/usr/local/bin/hzn,$(HZN))
+	@echo "${present}   ${green}SUCCESS: ${yellow}Anax agent found${no_color}."
+ifeq ($(OS),Darwin)
+ifeq (/usr/local/bin/horizon-container,$(HORIZON))
+	@echo "${present}   ${green}SUCCESS: ${yellow}Horizon container found${no_color}."
+ifeq (anax,$(findstring anax,$(HORIZON_RUNNING)))
+	@echo "${present}   ${green}SUCCESS: ${yellow}Horizon container is running${no_color}."
+else
+	@echo "${eyes}   ${yellow}WARNING: ${no_color}Horizon container is not running.  Try 'horizon-container start'."
+	@exit 1
+endif
+else
+	@echo "${crossbones}   ${red}ERROR: ${yellow}Horizon container not found.  Try (re)installing it${no_color}."
+	@exit 1
+endif
+endif
+else
+	@echo "${crossbones}   ${red}ERROR: ${yellow}Anax agent not found.  Try (re)installing it${no_color}."
+	@exit 1
+endif
+
 server-init:
 	@echo "${cyan}INITIALIZING UBUNTU SERVER FOR HORIZON SERVICES${no_color}"
 	@echo "${cyan}===============================================${no_color}"
 
 ifeq ($(OS),Darwin)
 	@echo "${crossbones}   ${red}WRONG OS: ${yellow}You appear to be running MacOS${no_color}."
+	@exit 1
 else
-	@echo "${cyan}Installing pre-requisites.${no_color}"
+	@echo "${cyan}Installing pre-requisites${no_color}."
 	@sudo apt-get -y update
 	@sudo apt-get -y install curl jq make gcc
 
-	@echo "${cyan}Installing Golang.${no_color}"
+	@echo "${cyan}Installing Golang${no_color}."
 	@sudo curl https://dl.google.com/go/go1.11.4.linux-amd64.tar.gz | sudo tar -xzf- -C /usr/local/
 	PATH = $PATH:/usr/local/go/bin
 
-	@echo "${cyan}Installing Docker and docker-compose.${no_color}"
+	@echo "${cyan}Installing Docker and docker-compose${no_color}."
 	@sudo curl -fsSL get.docker.com | sudo sh
 	@sudo usermod -aG docker ${USER}
 	@sudo apt-get -y install docker-compose
 
-	@echo "${cyan}Installing Go utilities.${no_color}"
+	@echo "${cyan}Installing Go utilities${no_color}."
 	@sudo mkdir -p /go/src
 	@sudo chmod -R a+rwx /go
 	GOPATH = /go
 	go get -u github.com/kardianos/govendor
 
-	@echo "${cyan}Retrieving Anax source code.${no_color}"
+	@echo "${cyan}Retrieving Anax source code${no_color}."
 	go get -u github.com/open-horizon/anax
 	ANAX_SOURCE = /go/src/github.com/open-horizon/anax
 endif
 
-.PHONY: default show-args publish-all validate-keys validate-file-exist validate-file-schema validate-exchange-exist populate-configs server-init
+.PHONY: default show-args publish-all validate-keys validate-file-exist validate-file-schema validate-exchange-exist populate-configs server-init validate-anax-exist check
