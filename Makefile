@@ -37,13 +37,13 @@ endif
 # These variables can be overridden from the environment
 PATTERN_NAME ?= pattern.edgex.amd64
 PATTERN_VERSION ?= 1.0.0
-HZN_ORG_ID ?= testorg
-HZN_EXCHANGE_USER_AUTH ?= joe:cool
-HZN_DEVICE_ID ?= joe-blue-osx
+HZN_ORG_ID ?= organization-name
+HZN_EXCHANGE_USER_AUTH ?= username:password
+HZN_DEVICE_ID ?= my-device-id
 HZN_DEVICE_TOKEN ?= i-am-not-a-pw
 HZN_EXCHANGE_NODE_AUTH ?= $(HZN_DEVICE_ID):$(HZN_DEVICE_TOKEN)
-HZN_EXCHANGE_URL ?= https://alpha.edge-fabric.com/v1/
-HZN_FSS_CSSURL ?= https://alpha.edge-fabric.com/css/
+HZN_EXCHANGE_URL ?= http://127.0.0.1:8080/v1/
+HZN_FSS_CSSURL ?= http://127.0.0.1:8080/css/
 
 default: show-args
 
