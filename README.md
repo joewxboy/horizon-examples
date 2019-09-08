@@ -5,6 +5,18 @@ Functional and practical services with associated service definition files and r
 
 This Makefile is intended to be run with the GNU Make utility. 
 The contents are intended to be run on OSX (MacOS) or Ubuntu Linux 18.04.x. 
+Pre-populate the following environment variables with your values before running. 
+Here are some example values.  Please modify as needed:
+
+``` bash
+export HZN_ORG_ID='organization-name'
+export HZN_EXCHANGE_USER_AUTH='username:password'
+export HZN_DEVICE_ID='my-device-id'
+export HZN_DEVICE_TOKEN='i-am-not-a-pw'
+export HZN_EXCHANGE_NODE_AUTH=$HZN_DEVICE_ID:$HZN_DEVICE_TOKEN
+export HZN_EXCHANGE_URL=http://127.0.0.1:8080/v1/
+export HZN_FSS_CSSURL=http://127.0.0.1:8080/css/
+```
 
 ## Usage
 

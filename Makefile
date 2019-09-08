@@ -41,7 +41,7 @@ HZN_ORG_ID ?= testorg
 HZN_EXCHANGE_USER_AUTH ?= joe:cool
 HZN_DEVICE_ID ?= joe-blue-osx
 HZN_DEVICE_TOKEN ?= i-am-not-a-pw
-HZN_EXCHANGE_NODE_AUTH ?= $HZN_DEVICE_ID:$HZN_DEVICE_TOKEN
+HZN_EXCHANGE_NODE_AUTH ?= $(HZN_DEVICE_ID):$(HZN_DEVICE_TOKEN)
 HZN_EXCHANGE_URL ?= https://alpha.edge-fabric.com/v1/
 HZN_FSS_CSSURL ?= https://alpha.edge-fabric.com/css/
 
@@ -50,18 +50,25 @@ default: show-args
 check: validate-anax-exist
 
 show-args:
-	@echo "${cyan}                  USER: ${yellow}$(USER)${no_color}"
-	@echo "${cyan}                   HZN: ${yellow}$(HZN)${no_color}"
-	@echo "${cyan}               HORIZON: ${yellow}$(HORIZON)${no_color}"
-	@echo "${cyan}                    OS: ${yellow}$(OS)${no_color}"
-	@echo "${cyan}           SYSTEM_ARCH: ${yellow}$(SYSTEM_ARCH)${no_color}"
-	@echo "${cyan}             PUBLIC_IP: ${yellow}$(PUBLIC_IP)${no_color}"
-	@echo "${cyan}          PATTERN_NAME: ${yellow}$(PATTERN_NAME)${no_color}"
-	@echo "${cyan}            HZN_ORG_ID: ${yellow}$(HZN_ORG_ID)${no_color}"
-	@echo "${cyan}      HZN_EXCHANGE_URL: ${yellow}$(HZN_EXCHANGE_URL)${no_color}"
-	@echo "${cyan}        HZN_FSS_CSSURL: ${yellow}$(HZN_FSS_CSSURL)${no_color}"
-	@echo "${cyan}HZN_EXCHANGE_USER_AUTH: ${yellow}$(HZN_EXCHANGE_USER_AUTH)${no_color}"
-	@echo "${cyan}          HZN_FILEPATH: ${yellow}$(HZN_FILEPATH)${no_color}"
+	@echo "${cyan}SYSTEM SETTINGS, NOT FROM VARIABLES${no_color}"
+	@echo "${cyan}===================================${no_color}"
+	@echo "${green}                  USER: ${yellow}$(USER)${no_color}"
+	@echo "${green}                   HZN: ${yellow}$(HZN)${no_color}"
+	@echo "${green}               HORIZON: ${yellow}$(HORIZON)${no_color}"
+	@echo "${green}                    OS: ${yellow}$(OS)${no_color}"
+	@echo "${green}           SYSTEM_ARCH: ${yellow}$(SYSTEM_ARCH)${no_color}"
+	@echo "${green}             PUBLIC_IP: ${yellow}$(PUBLIC_IP)${no_color}"
+	@echo "${green}          HZN_FILEPATH: ${yellow}$(HZN_FILEPATH)${no_color}"
+	@echo ""
+	@echo "${cyan}USER SETTINGS, FROM ENVIRONMENT${no_color}"
+	@echo "${cyan}===============================${no_color}"
+	@echo "${green}            HZN_ORG_ID: ${yellow}$(HZN_ORG_ID)${no_color}"
+	@echo "${green}HZN_EXCHANGE_USER_AUTH: ${yellow}$(HZN_EXCHANGE_USER_AUTH)${no_color}"
+	@echo "${green}         HZN_DEVICE_ID: ${yellow}$(HZN_DEVICE_ID)${no_color}"
+	@echo "${green}      HZN_DEVICE_TOKEN: ${yellow}$(HZN_DEVICE_TOKEN)${no_color}"
+	@echo "${green}HZN_EXCHANGE_NODE_AUTH: ${yellow}$(HZN_EXCHANGE_NODE_AUTH)${no_color}"
+	@echo "${green}      HZN_EXCHANGE_URL: ${yellow}$(HZN_EXCHANGE_URL)${no_color}"
+	@echo "${green}        HZN_FSS_CSSURL: ${yellow}$(HZN_FSS_CSSURL)${no_color}"
 
 publish-all: populate-configs validate-keys validate-exchange-exist validate-file-exist validate-file-schema
 
