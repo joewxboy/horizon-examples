@@ -29,15 +29,6 @@ or to use the defaults for the variables that are not set, run:
 make
 ```
 
-### Server Initialization
-
-If you are running the Makefile on an Ubuntu Server 18.04.x, 
-the `server-init` parameter will install the pre-requisites for the Horizon Services:
-
-``` bash
-make server-init
-```
-
 ### Client Install Check
 
 To verify that the Anax agent is installed and running, use the following:
@@ -53,4 +44,13 @@ the following will write the values as shown in `Current Configuration` above an
 
 ``` bash
 make populate-configs
+```
+
+### Server Initialization
+
+If you are running the Makefile on an Ubuntu Server 18.04.x, 
+the `server-init` parameter will install the pre-requisites for the Horizon Services:
+
+``` bash
+make server-init
 ```
