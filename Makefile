@@ -76,7 +76,14 @@ populate-configs:
 	@echo "${cyan}POPULATING CONFIGURATION FILES${no_color}"
 	@echo "${cyan}==============================${no_color}"
 
-	@echo "${cyan}Populating agent variable data properties files${no_color}."
+	@echo "${cyan}Stopping Horizon Anax agent${no_color}."
+ifeq ($(OS),Darwin)
+	@sudo horizon-container stop
+else
+	@sudo systemctl stop horizon
+endif
+
+@echo "${cyan}Populating agent variable data properties files${no_color}."
 ifeq (,$(wildcard /etc/default/horizon))
 	@echo "${crossbones}   ${red}FILE NOT FOUND: ${yellow}/etc/default/horizon${no_color}, cannot continue."
 	@echo "Is the Horizon Anax agent installed?"
@@ -95,12 +102,11 @@ else
 	@echo "}" >> ${HZN_FILEPATH}/hzn.json
 endif
 
-	@echo "${cyan}Restarting Horizon Anax agent${no_color}."
+	@echo "${cyan}Starting Horizon Anax agent${no_color}."
 ifeq ($(OS),Darwin)
-	@sudo horizon-container stop
 	@sudo horizon-container start
 else
-	@sudo systemctl restart horizon
+	@sudo systemctl start horizon
 endif
 
 	@echo "${cyan}Task complete${no_color}."
