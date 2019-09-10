@@ -152,7 +152,7 @@ else
 
 	@echo "${cyan}Installing Golang${no_color}."
 	@sudo curl https://dl.google.com/go/go1.11.4.linux-amd64.tar.gz | sudo tar -xzf- -C /usr/local/
-	PATH = $PATH:/usr/local/go/bin
+	PATH=$PATH:/usr/local/go/bin
 
 	@echo "${cyan}Installing Docker and docker-compose${no_color}."
 	@sudo curl -fsSL get.docker.com | sudo sh
@@ -162,12 +162,11 @@ else
 	@echo "${cyan}Installing Go utilities${no_color}."
 	@sudo mkdir -p /go/src
 	@sudo chmod -R a+rwx /go
-	GOPATH = /go
-	go get -u github.com/kardianos/govendor
+	GOPATH=/go
 
 	@echo "${cyan}Retrieving Anax source code${no_color}."
 	go get -u github.com/open-horizon/anax
-	ANAX_SOURCE = /go/src/github.com/open-horizon/anax
+	ANAX_SOURCE=/go/src/github.com/open-horizon/anax
 endif
 
 .PHONY: default show-args publish-all validate-keys validate-file-exist validate-file-schema validate-exchange-exist populate-configs server-init validate-anax-exist check
