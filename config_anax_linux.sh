@@ -7,6 +7,13 @@ if [ $OS = Darwin ]
         echo ""
 	    exit 1
 fi
+WHOAMI=`whoami`
+if [ $WHOAMI = root ]
+    then
+        _PREFIX=''
+    else
+        _PREFIX='sudo'
+fi
 
 HZN_JSON_FILEPATH=/etc/horizon/hzn.json
 HZN_FILEPATH=/etc/default/horizon
@@ -46,6 +53,7 @@ echo "  ex: https://alpha.edge-fabric.com/v1/"
 echo "  ex: http://127.0.0.1:8080/v1/"
 
 read -p 'Exchange: ' HZN_EXCHANGE_URL
+export HZN_EXCHANGE_URL=${HZN_EXCHANGE_URL}
 
 echo "Type in Sync Service address"
 echo "  NOTE: Ensure you get protocol, port, and trailing slash correct"
@@ -53,6 +61,7 @@ echo "  ex: https://alpha.edge-fabric.com/css/"
 echo "  ex: http://127.0.0.1:8080/css/"
 
 read -p 'Sync: ' HZN_FSS_CSSURL
+export HZN_FSS_CSSURL=${HZN_FSS_CSSURL}
 
 echo ""
 echo "====="
@@ -62,7 +71,7 @@ echo ""
 sleep 2
 
 hzn unregister -r -f
-sudo systemctl stop horizon
+${_PREFIX} systemctl stop horizon
 
 echo ""
 echo "====="
@@ -76,7 +85,7 @@ sleep 2
 #     "HZN_FSS_CSSURL": "https://alpha.edge-fabric.com/css/"
 # }
 
-sudo chmod a+rw ${HZN_JSON_FILEPATH}
+${_PREFIX} chmod a+rw ${HZN_JSON_FILEPATH}
 echo "{" > ${HZN_JSON_FILEPATH}
 echo "	\"HZN_EXCHANGE_URL\": \"${HZN_EXCHANGE_URL}\"," >> ${HZN_JSON_FILEPATH}
 echo "	\"HZN_FSS_CSSURL\": \"${HZN_FSS_CSSURL}\"" >> ${HZN_JSON_FILEPATH}
@@ -86,9 +95,10 @@ echo "}" >> ${HZN_JSON_FILEPATH}
 # HZN_FSS_CSSURL=
 # HZN_DEVICE_ID=51a8799835ab89e8a9464b1b3995c592a4755b26
 
-sudo chmod a+rw ${HZN_FILEPATH}
+${_PREFIX} chmod a+rw ${HZN_FILEPATH}
 echo "HZN_EXCHANGE_URL=${HZN_EXCHANGE_URL}" > ${HZN_FILEPATH}
 echo "HZN_FSS_CSSURL=${HZN_FSS_CSSURL}" >> ${HZN_FILEPATH}
+echo "HZN_DEVICE_ID=51a8799835ab89e8a9464b1b3995c592a4755b26" >> ${HZN_FILEPATH}
 
 echo "HZN_EXCHANGE_URL=${HZN_EXCHANGE_URL}" >> ${BASHRC}
 echo "HZN_FSS_CSSURL=${HZN_FSS_CSSURL}" >> ${BASHRC}
@@ -101,5 +111,5 @@ echo "====="
 echo ""
 sleep 2
 
-sudo systemctl start horizon
+${_PREFIX} systemctl start horizon
 hzn version
