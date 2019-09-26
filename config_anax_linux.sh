@@ -53,7 +53,6 @@ echo "  ex: https://alpha.edge-fabric.com/v1/"
 echo "  ex: http://127.0.0.1:8080/v1/"
 
 read -p 'Exchange: ' HZN_EXCHANGE_URL
-export HZN_EXCHANGE_URL=${HZN_EXCHANGE_URL}
 
 echo "Type in Sync Service address"
 echo "  NOTE: Ensure you get protocol, port, and trailing slash correct"
@@ -61,7 +60,6 @@ echo "  ex: https://alpha.edge-fabric.com/css/"
 echo "  ex: http://127.0.0.1:8080/css/"
 
 read -p 'Sync: ' HZN_FSS_CSSURL
-export HZN_FSS_CSSURL=${HZN_FSS_CSSURL}
 
 echo ""
 echo "====="
@@ -100,8 +98,8 @@ echo "HZN_EXCHANGE_URL=${HZN_EXCHANGE_URL}" > ${HZN_FILEPATH}
 echo "HZN_FSS_CSSURL=${HZN_FSS_CSSURL}" >> ${HZN_FILEPATH}
 echo "HZN_DEVICE_ID=51a8799835ab89e8a9464b1b3995c592a4755b26" >> ${HZN_FILEPATH}
 
-echo "HZN_EXCHANGE_URL=${HZN_EXCHANGE_URL}" >> ${BASHRC}
-echo "HZN_FSS_CSSURL=${HZN_FSS_CSSURL}" >> ${BASHRC}
+echo "export HZN_EXCHANGE_URL=${HZN_EXCHANGE_URL}" >> ${BASHRC}
+echo "export HZN_FSS_CSSURL=${HZN_FSS_CSSURL}" >> ${BASHRC}
 
 
 echo ""
@@ -112,4 +110,6 @@ echo ""
 sleep 2
 
 ${_PREFIX} systemctl start horizon
+sleep 1
+source ~/.bashrc
 hzn version
