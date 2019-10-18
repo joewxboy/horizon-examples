@@ -61,6 +61,11 @@ echo "  ex: http://127.0.0.1:8080/css/"
 
 read -p 'Sync: ' HZN_FSS_CSSURL
 
+echo "Type in Device ID"
+echo "  ex: 000000002caf51bd"
+
+read -p 'Device ID: ' HZN_DEVICE_ID
+
 echo ""
 echo "====="
 echo "Unregistering Node and Stopping Horizon"
@@ -96,7 +101,7 @@ echo "}" >> ${HZN_JSON_FILEPATH}
 ${_PREFIX} chmod a+rw ${HZN_FILEPATH}
 echo "HZN_EXCHANGE_URL=${HZN_EXCHANGE_URL}" > ${HZN_FILEPATH}
 echo "HZN_FSS_CSSURL=${HZN_FSS_CSSURL}" >> ${HZN_FILEPATH}
-echo "HZN_DEVICE_ID=51a8799835ab89e8a9464b1b3995c592a4755b26" >> ${HZN_FILEPATH}
+echo "HZN_DEVICE_ID=${HZN_DEVICE_ID}" >> ${HZN_FILEPATH}
 
 echo "export HZN_EXCHANGE_URL=${HZN_EXCHANGE_URL}" >> ${BASHRC}
 echo "export HZN_FSS_CSSURL=${HZN_FSS_CSSURL}" >> ${BASHRC}
