@@ -20,6 +20,14 @@ export HZN_FSS_CSSURL=http://127.0.0.1:8080/css/
 
 ## Usage
 
+### Download
+
+To download this `Makefile`, the fastest way is to use `curl`:
+
+``` bash
+curl -sSL https://raw.githubusercontent.com/joewxboy/horizon-examples/master/Makefile > Makefile
+```
+
 ### Current Configuration
 
 To see what your environment variables are set to, 
