@@ -65,4 +65,4 @@ make server-init
 
 ## Contributors
 
-![/CONTRIBUTORS.svg]
+![](/CONTRIBUTORS.svg)
