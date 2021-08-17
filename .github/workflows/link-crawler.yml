@@ -1,7 +1,8 @@
-name: Link Scanner
+name: LinkScanner
 on:
   schedule:
     - cron: '0 1 * * 0' # At 01:00 on Sunday.
+  workflow_dispatch
 jobs:
   scanner:
     runs-on: ubuntu-latest
