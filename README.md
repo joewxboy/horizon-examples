@@ -62,3 +62,7 @@ the `server-init` parameter will install the pre-requisites for the Horizon Serv
 ``` bash
 make server-init
 ```
+
+## Contributors
+
+![](/CONTRIBUTORS.svg)
