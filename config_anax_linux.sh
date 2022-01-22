@@ -14,10 +14,19 @@ if [ $WHOAMI = root ]
     else
         _PREFIX='sudo'
 fi
+if [ $OS = Darwin ]
+    then
+        echo "Storing settings in zshrc."
+        echo ""
+        BASHRC=~/.zshrc
+    else
+        echo "Storing settings in bashrc."
+        echo ""
+        BASHRC=~/.bashrc
+fi
 
 HZN_JSON_FILEPATH=/etc/horizon/hzn.json
 HZN_FILEPATH=/etc/default/horizon
-BASHRC=~/.bashrc
 
 echo ""
 echo "====="
@@ -116,5 +125,5 @@ sleep 2
 
 ${_PREFIX} systemctl start horizon
 sleep 1
-source ~/.bashrc
+source ${BASHRC}
 hzn version

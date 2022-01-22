@@ -84,7 +84,7 @@ else
 	@sudo systemctl stop horizon
 endif
 
-@echo "${cyan}Populating agent variable data properties files${no_color}."
+	@echo "${cyan}Populating agent variable data properties files${no_color}."
 ifeq (,$(wildcard /etc/default/horizon))
 	@echo "${crossbones}   ${red}FILE NOT FOUND: ${yellow}/etc/default/horizon${no_color}, cannot continue."
 	@echo "Is the Horizon Anax agent installed?"
