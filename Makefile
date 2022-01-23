@@ -77,7 +77,7 @@ populate-configs:
 	@echo "${cyan}==============================${no_color}"
 
 	@echo "${cyan}Stopping Horizon Anax agent${no_color}."
-	@sudo hzn unregister -r -f
+	@hzn unregister -r -f
 ifeq ($(OS),Darwin)
 	@sudo horizon-container stop
 else
