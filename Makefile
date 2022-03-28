@@ -155,7 +155,7 @@ ifeq ($(OS),Darwin)
 else
 	@echo "${cyan}Installing pre-requisites${no_color}."
 	@sudo apt-get -y update
-	@sudo apt-get -y install curl jq make gcc
+	@sudo apt-get -y install curl jq make gcc net-tools
 
 	@echo "${cyan}Installing Golang${no_color}."
 	@sudo curl https://dl.google.com/go/go1.11.4.linux-amd64.tar.gz | sudo tar -xzf- -C /usr/local/
